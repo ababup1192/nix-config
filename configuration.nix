@@ -44,6 +44,11 @@
       "ghostty"
       "azooKey"
       "bettertouchtool"
+      "heptabase"
+      "datagrip"
+      "docker-desktop"
+      "ticktick"
+      "nikitabobko/tap/aerospace"
     ];
   };
 }

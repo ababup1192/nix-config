@@ -125,7 +125,7 @@
       alpha-blending = "linear";
       adjust-cell-width = -1;
       adjust-cell-height = 2;
-      macos-titlebar-style = "tabs";
+      macos-titlebar-style = "hidden";
       window-padding-x = 10;
       window-padding-y = 10;
       window-padding-balance = true;
