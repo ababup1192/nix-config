@@ -1,5 +1,9 @@
 { pkgs, config, ... }:
 {
+  # --- Imports ---
+  imports = [
+    ./gcloud.nix
+  ];
   # --- 基本設定 ---
   home.username = "abab";
   home.homeDirectory = "/Users/abab";
@@ -14,12 +18,18 @@
     git
     neovim
     devbox
+    claude-code
+    gzip
 
-    #Programming Languages
+    #Programming Languages(あんまり入れたくないよ)
     go
 
     protobuf
     zimfw
+    (pkgs.writeShellScriptBin "difit" ''
+      export PATH="${pkgs.git}/bin:${pkgs.nodejs}/bin:$PATH"
+      ${pkgs.nodejs}/bin/npx -y difit "$@"
+    '')
   ];
 
   xdg.configFile."zsh/.zimrc".text = ''
@@ -55,7 +65,7 @@
       export ZIM_HOME=''${XDG_CACHE_HOME:-''${HOME}/.cache}/zim
       export ZIM_CONFIG_FILE=''${HOME}/.config/zsh/.zimrc
       local ZIM_FW_SCRIPT="${pkgs.zimfw}/zimfw.zsh"
-      
+
       zimfw() { source "''${ZIM_FW_SCRIPT}" "$@" }
 
       if [[ ! ''${ZIM_HOME}/init.zsh -nt ''${ZIM_CONFIG_FILE} ]]; then
