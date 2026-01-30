@@ -27,6 +27,7 @@
     protobuf
     zimfw
     jankyborders
+    (pkgs.callPackage ./octorus.nix { })
     (pkgs.writeShellScriptBin "difit" ''
       export PATH="${pkgs.git}/bin:${pkgs.nodejs}/bin:$PATH"
       ${pkgs.nodejs}/bin/npx -y difit "$@"
