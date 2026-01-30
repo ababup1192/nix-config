@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   imports = [
     ./font.nix
     ./macos-settings.nix
@@ -41,6 +42,7 @@
       "raycast"
       "cleanshot"
       "slack"
+      "discord"
       "ghostty"
       "azooKey"
       "bettertouchtool"
@@ -49,6 +51,7 @@
       "docker-desktop"
       "ticktick"
       "nikitabobko/tap/aerospace"
+      "steam"
     ];
   };
 }

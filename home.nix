@@ -26,6 +26,7 @@
 
     protobuf
     zimfw
+    jankyborders
     (pkgs.writeShellScriptBin "difit" ''
       export PATH="${pkgs.git}/bin:${pkgs.nodejs}/bin:$PATH"
       ${pkgs.nodejs}/bin/npx -y difit "$@"
@@ -47,7 +48,6 @@
 
     # エイリアス設定
     shellAliases = {
-      ls = "eza -F --icons";
       rm = "rm -i";
       grep = "grep --color=auto";
       cat = "bat";
@@ -61,6 +61,10 @@
     };
 
     initContent = ''
+      ls() {
+        ${pkgs.eza}/bin/eza -F --icons "$@"
+      }
+
       # Zim のインストール先
       export ZIM_HOME=''${XDG_CACHE_HOME:-''${HOME}/.cache}/zim
       export ZIM_CONFIG_FILE=''${HOME}/.config/zsh/.zimrc
@@ -152,6 +156,20 @@
   programs.atuin = {
     enable = true;
     enableZshIntegration = true;
+  };
+
+  launchd.agents.borders = {
+    enable = true;
+    config = {
+      ProgramArguments = [
+        "${pkgs.jankyborders}/bin/borders"
+        "active_color=0xE025A64A"
+        "inactive_color=0x262F2F2F"
+        "width=12.0"
+      ];
+      KeepAlive = true;
+      RunAtLoad = true;
+    };
   };
 
   # home-manager 自体を有効化
