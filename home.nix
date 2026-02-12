@@ -13,6 +13,7 @@
   home.packages = with pkgs; [
     nixfmt
 
+    zoxide
     bat
     eza
     git
