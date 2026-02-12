@@ -62,6 +62,15 @@
     };
 
     initContent = ''
+      # Devbox 自動起動フック
+      function devbox_auto_shell() {
+        if [[ -f devbox.json ]] && [[ -z "$DEVBOX_SHELL_ENABLED" ]]; then
+           print -P "%F{green}📦 Devbox detected. Entering shell...%f"
+           devbox shell
+        fi
+      }
+      chpwd_functions+=(devbox_auto_shell)
+
       ls() {
         ${pkgs.eza}/bin/eza -F --icons "$@"
       }
