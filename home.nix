@@ -159,6 +159,11 @@
     enableZshIntegration = true;
   };
 
+  programs.zoxide = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
   launchd.agents.borders = {
     enable = true;
     config = {
