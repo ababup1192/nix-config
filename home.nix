@@ -41,6 +41,57 @@
     zmodule zsh-users/zsh-autosuggestions
   '';
 
+  xdg.configFile."zsh/devbox_auto_shell.zsh".text = ''
+    #!/usr/bin/env zsh
+    # Devbox automatic shell entry/exit hook
+    # Automatically enters devbox shell when cd into a devbox project,
+    # and exits when leaving the project directory.
+
+    function devbox_auto_shell() {
+      local current_dir="$PWD"
+      local has_devbox_json=false
+
+      # Define target directory file based on parent shell PID
+      local parent_pid="''${DEVBOX_PARENT_PID:-$$}"
+      local target_dir_file="/tmp/devbox_target_dir_$parent_pid"
+
+      # Check if we just exited devbox and need to change directory
+      if [[ -f "$target_dir_file" ]] && [[ -z "$DEVBOX_PROJECT_ROOT" ]]; then
+        local target_dir=$(cat "$target_dir_file")
+        rm -f "$target_dir_file"  # Remove file first to avoid infinite loop
+        if [[ "$target_dir" != "$PWD" ]]; then
+          cd "$target_dir"  # This will trigger chpwd again, but file is gone
+          return
+        fi
+      fi
+
+      # Check if current directory has devbox.json
+      if [[ -f "$current_dir/devbox.json" ]]; then
+        has_devbox_json=true
+      fi
+
+      # Case 1: We're in a devbox shell
+      if [[ -n "$DEVBOX_PROJECT_ROOT" ]]; then
+        # Check if we've left the devbox project directory
+        if [[ "$current_dir" != "$DEVBOX_PROJECT_ROOT"* ]]; then
+          # Save target directory to temp file
+          echo "$current_dir" > "$target_dir_file"
+          print -P "%F{yellow}📦 Leaving devbox project. Exiting shell...%f"
+          exit
+        fi
+      # Case 2: We're not in a devbox shell
+      elif [[ "$has_devbox_json" == true ]] && [[ -z "$DEVBOX_SHELL_ENABLED" ]]; then
+        # Save parent PID for later use
+        export DEVBOX_PARENT_PID=$$
+        print -P "%F{green}📦 Devbox detected. Entering shell...%f"
+        devbox shell
+      fi
+    }
+
+    # Register the function to be called on directory change
+    chpwd_functions+=(devbox_auto_shell)
+  '';
+
   home.sessionPath = [
     "${config.home.homeDirectory}/.antigravity/antigravity/bin"
   ];
@@ -63,14 +114,8 @@
     };
 
     initContent = ''
-      # Devbox 自動起動フック
-      function devbox_auto_shell() {
-        if [[ -f devbox.json ]] && [[ -z "$DEVBOX_SHELL_ENABLED" ]]; then
-           print -P "%F{green}📦 Devbox detected. Entering shell...%f"
-           devbox shell
-        fi
-      }
-      chpwd_functions+=(devbox_auto_shell)
+      # Source devbox auto shell hook
+      source ~/.config/zsh/devbox_auto_shell.zsh
 
       ls() {
         ${pkgs.eza}/bin/eza -F --icons "$@"
@@ -137,11 +182,11 @@
       # Theme & Font
       theme = "Catppuccin Mocha";
       font-family = "JetBrains Mono";
-      font-feature = [
-        "calt"
-        "liga"
-        "dlig"
-      ];
+      # font-feature = [
+      #   "calt"
+      #   "liga"
+      #   "dlig"
+      # ];
 
       # Settings from Image
       font-size = 14;
