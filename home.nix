@@ -17,6 +17,7 @@
     bat
     eza
     git
+    jujutsu
     gh
     neovim
     devbox
@@ -33,6 +34,14 @@
       export PATH="${pkgs.git}/bin:${pkgs.nodejs}/bin:$PATH"
       ${pkgs.nodejs}/bin/npx -y difit "$@"
     '')
+    (pkgs.writeShellScriptBin "feed-curator" ''
+      export PATH="${pkgs.nodejs}/bin:$PATH"
+      export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+      if ! command -v "$HOME/.npm-global/bin/feed-curator" &> /dev/null; then
+        ${pkgs.nodejs}/bin/npm install -g feed-curator
+      fi
+      "$HOME/.npm-global/bin/feed-curator" "$@"
+    '')
   ];
 
   xdg.configFile."zsh/.zimrc".text = ''
@@ -47,23 +56,29 @@
     # Automatically enters devbox shell when cd into a devbox project,
     # and exits when leaving the project directory.
 
+    # precmd hook: Check if we returned from devbox shell and need to cd
+    function devbox_check_target_dir() {
+      local target_dir_file="/tmp/devbox_target_dir_$$"
+
+      # Skip if we're inside devbox shell
+      if [[ -n "$DEVBOX_PROJECT_ROOT" ]]; then
+        return
+      fi
+
+      # If target directory file exists, cd to that directory
+      if [[ -f "$target_dir_file" ]]; then
+        local target_dir=$(cat "$target_dir_file")
+        rm -f "$target_dir_file"
+        if [[ -d "$target_dir" ]] && [[ "$target_dir" != "$PWD" ]]; then
+          print -P "%F{blue}📦 Moving to: $target_dir%f"
+          cd "$target_dir"
+        fi
+      fi
+    }
+
     function devbox_auto_shell() {
       local current_dir="$PWD"
       local has_devbox_json=false
-
-      # Define target directory file based on parent shell PID
-      local parent_pid="''${DEVBOX_PARENT_PID:-$$}"
-      local target_dir_file="/tmp/devbox_target_dir_$parent_pid"
-
-      # Check if we just exited devbox and need to change directory
-      if [[ -f "$target_dir_file" ]] && [[ -z "$DEVBOX_PROJECT_ROOT" ]]; then
-        local target_dir=$(cat "$target_dir_file")
-        rm -f "$target_dir_file"  # Remove file first to avoid infinite loop
-        if [[ "$target_dir" != "$PWD" ]]; then
-          cd "$target_dir"  # This will trigger chpwd again, but file is gone
-          return
-        fi
-      fi
 
       # Check if current directory has devbox.json
       if [[ -f "$current_dir/devbox.json" ]]; then
@@ -74,7 +89,8 @@
       if [[ -n "$DEVBOX_PROJECT_ROOT" ]]; then
         # Check if we've left the devbox project directory
         if [[ "$current_dir" != "$DEVBOX_PROJECT_ROOT"* ]]; then
-          # Save target directory to temp file
+          # Save target directory to temp file (use parent PID)
+          local target_dir_file="/tmp/devbox_target_dir_$DEVBOX_PARENT_PID"
           echo "$current_dir" > "$target_dir_file"
           print -P "%F{yellow}📦 Leaving devbox project. Exiting shell...%f"
           exit
@@ -88,7 +104,8 @@
       fi
     }
 
-    # Register the function to be called on directory change
+    # Register hooks
+    precmd_functions+=(devbox_check_target_dir)
     chpwd_functions+=(devbox_auto_shell)
   '';
 
