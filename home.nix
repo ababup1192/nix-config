@@ -27,6 +27,7 @@
     #Programming Languages(あんまり入れたくないよ)
     go
 
+    rtk
     protobuf
     zimfw
     jankyborders
@@ -113,6 +114,10 @@
     "${config.home.homeDirectory}/.antigravity/antigravity/bin"
   ];
 
+  home.sessionVariables = {
+    EDITOR = "nvim";
+  };
+
   programs.zsh = {
     enable = true;
 
@@ -150,6 +155,10 @@
       fi
 
       source ''${ZIM_HOME}/init.zsh
+
+      # 新しいシェル起動時にも devbox 自動入りをチェック
+      # (ghostty の cmd+d で分割した新ペインなど、chpwd が発火しないケース用)
+      devbox_auto_shell
     '';
   };
 
