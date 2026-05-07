@@ -52,6 +52,8 @@
       "ticktick"
       "nikitabobko/tap/aerospace"
       "steam"
+      "obsidian"
+      "visual-studio-code"
     ];
   };
 }

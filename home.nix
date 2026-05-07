@@ -189,7 +189,7 @@
       # ];
 
       # Settings from Image
-      font-size = 14;
+      font-size = 18;
       font-thicken = true;
       font-thicken-strength = 1;
       alpha-blending = "linear";
