@@ -12,6 +12,10 @@
     # home-manager のソース
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    # Claude Code を公式リリースに追従させる
+    claude-code.url = "github:sadjow/claude-code-nix";
+    claude-code.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -20,6 +24,7 @@
       nixpkgs,
       darwin,
       home-manager,
+      claude-code,
     }:
     {
       # "HOSTNAME" は自分の Mac のホスト名 (hostname -s) に書き換えてください
@@ -29,6 +34,8 @@
           ./configuration.nix # システム設定（後で作ります）
           {
             nixpkgs.config.allowUnfree = true;
+            # Claude Code を専用 flake の最新版で上書き
+            nixpkgs.overlays = [ claude-code.overlays.default ];
           }
 
           # home-manager を nix-darwin のモジュールとして組み込む
