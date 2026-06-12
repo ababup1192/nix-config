@@ -46,8 +46,12 @@
   ];
 
   xdg.configFile."zsh/.zimrc".text = ''
-    zmodule zsh-users/zsh-syntax-highlighting
+    # 補完系を先に読み込み、completion モジュールで compinit を実行する
     zmodule zsh-users/zsh-completions
+    zmodule completion
+
+    # ZLE ウィジェットをラップするため、これらは必ず最後に読み込む
+    zmodule zsh-users/zsh-syntax-highlighting
     zmodule zsh-users/zsh-autosuggestions
   '';
 
@@ -121,6 +125,10 @@
   programs.zsh = {
     enable = true;
 
+    # compinit は zim の completion モジュール (.zimrc) で実行するため、
+    # home-manager 側の compinit 呼び出しを無効化して二重初期化を防ぐ
+    enableCompletion = false;
+
     # エイリアス設定
     shellAliases = {
       rm = "rm -i";
@@ -150,8 +158,16 @@
 
       zimfw() { source "''${ZIM_FW_SCRIPT}" "$@" }
 
-      if [[ ! ''${ZIM_HOME}/init.zsh -nt ''${ZIM_CONFIG_FILE} ]]; then
+      # .zimrc は nix store 上の symlink で mtime が 1970 固定のため、
+      # -nt 比較では再生成が走らない。symlink の実体パス(内容が変わると
+      # store hash も変わる)をセンチネルに記録し、変化時のみ再生成する。
+      local _zimrc_target="$(readlink -f ''${ZIM_CONFIG_FILE})"
+      local _zim_sentinel="''${ZIM_HOME}/.zimrc-source"
+      if [[ ! -e ''${ZIM_HOME}/init.zsh \
+            || ! -e ''${_zim_sentinel} \
+            || "$(cat ''${_zim_sentinel} 2>/dev/null)" != "''${_zimrc_target}" ]]; then
         zsh "''${ZIM_FW_SCRIPT}" init -q
+        print -r -- "''${_zimrc_target}" > ''${_zim_sentinel}
       fi
 
       source ''${ZIM_HOME}/init.zsh
