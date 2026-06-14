@@ -22,6 +22,7 @@
     neovim
     devbox
     claude-code
+    cmux
     gzip
 
     #Programming Languages(あんまり入れたくないよ)

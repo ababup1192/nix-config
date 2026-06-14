@@ -44,7 +44,6 @@
       "slack"
       "discord"
       "ghostty"
-      "azooKey"
       "bettertouchtool"
       "heptabase"
       "datagrip"
