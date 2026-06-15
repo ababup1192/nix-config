@@ -23,6 +23,7 @@
     devbox
     claude-code
     cmux
+    (import ./cmux-git-diff.nix { inherit pkgs; })
     gzip
 
     #Programming Languages(あんまり入れたくないよ)
@@ -173,6 +174,13 @@
 
       source ''${ZIM_HOME}/init.zsh
 
+      # Ghostty シェル統合 (home-manager 既定の代替・堅牢版)
+      # ファイルが実在するときだけ source し、変数が壊れていてもエラーにしない
+      if [[ -n "$GHOSTTY_RESOURCES_DIR" \
+            && -r "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration" ]]; then
+        source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
+      fi
+
       # 新しいシェル起動時にも devbox 自動入りをチェック
       # (ghostty の cmd+d で分割した新ペインなど、chpwd が発火しないケース用)
       devbox_auto_shell
@@ -221,6 +229,10 @@
   programs.ghostty = {
     enable = true;
     package = null;
+    # zsh 統合は home-manager 既定だと存在チェックなしで source するため、
+    # GHOSTTY_RESOURCES_DIR が壊れた値のとき(devbox 自動シェル起動時など)に
+    # エラーを出す。無効化し、initContent 側で -r チェック付きの安全版を読み込む。
+    enableZshIntegration = false;
     settings = {
       # Theme & Font
       theme = "Catppuccin Mocha";
@@ -232,7 +244,7 @@
       # ];
 
       # Settings from Image
-      font-size = 18;
+      font-size = 13;
       font-thicken = true;
       font-thicken-strength = 1;
       alpha-blending = "linear";
