@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 {
   # Google Cloud SDK のセットアップ
 
@@ -28,7 +28,10 @@
   '';
 
   # Zsh統合
-  programs.zsh.initContent = ''
+  # compinit を呼ぶ completion.zsh.inc が Zim の completion モジュールより
+  # 先に走ると二重初期化で補完が壊れるため、mkAfter で initContent の最後
+  # (Zim init.zsh の後) に回す。compdef 定義済みなら compinit はスキップされる。
+  programs.zsh.initContent = lib.mkAfter ''
     # Google Cloud SDK
     export CLOUDSDK_PYTHON="${pkgs.python311}/bin/python3.11"
     if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then
