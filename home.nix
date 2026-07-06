@@ -140,9 +140,9 @@
       vim = "nvim";
 
       # nix設定
-      nix-switch = "sudo -H nix run nix-darwin -- switch --flake ~/.config/nix-config#abab";
+      nix-switch = "sudo -H env NIX_CONFIG=\"access-tokens = github.com=$(gh auth token)\" nix run nix-darwin -- switch --flake ~/.config/nix-config#abab";
       nix-cd = "cd ~/.config/nix-config";
-      nix-update = "sudo -H nix flake update";
+      nix-update = "sudo -H env NIX_CONFIG=\"access-tokens = github.com=$(gh auth token)\" nix flake update";
     };
 
     initContent = ''
