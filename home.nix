@@ -25,6 +25,7 @@
     cmux
     herdr
     (import ./cmux-git-diff.nix { inherit pkgs; })
+    (import ./hunk.nix { inherit pkgs; })
     gzip
 
     #Programming Languages(あんまり入れたくないよ)
