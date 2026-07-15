@@ -16,6 +16,10 @@
     # Claude Code を公式リリースに追従させる
     claude-code.url = "github:sadjow/claude-code-nix";
     claude-code.inputs.nixpkgs.follows = "nixpkgs";
+
+    # herdr (ターミナル用 AI エージェントマルチプレクサ)
+    herdr.url = "github:ogulcancelik/herdr";
+    herdr.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -25,6 +29,7 @@
       darwin,
       home-manager,
       claude-code,
+      herdr,
     }:
     {
       # "HOSTNAME" は自分の Mac のホスト名 (hostname -s) に書き換えてください
@@ -35,7 +40,10 @@
           {
             nixpkgs.config.allowUnfree = true;
             # Claude Code を専用 flake の最新版で上書き
-            nixpkgs.overlays = [ claude-code.overlays.default ];
+            nixpkgs.overlays = [
+              claude-code.overlays.default
+              herdr.overlays.default
+            ];
           }
 
           # home-manager を nix-darwin のモジュールとして組み込む

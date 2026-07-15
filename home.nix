@@ -23,6 +23,7 @@
     devbox
     claude-code
     cmux
+    herdr
     (import ./cmux-git-diff.nix { inherit pkgs; })
     gzip
 
