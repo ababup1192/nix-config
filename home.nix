@@ -152,7 +152,7 @@
       source ~/.config/zsh/devbox_auto_shell.zsh
 
       ls() {
-        ${pkgs.eza}/bin/eza -F --icons "$@"
+        ${pkgs.eza}/bin/eza -F --icons=auto "$@"
       }
 
       # Zim のインストール先
