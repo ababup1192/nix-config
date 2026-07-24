@@ -43,6 +43,11 @@
             nixpkgs.overlays = [
               claude-code.overlays.default
               herdr.overlays.default
+              # rtk 0.43.0 は上流のデッドコード警告 + `-D warnings` で
+              # テストのコンパイルが失敗するため、テストを無効化して回避する
+              (final: prev: {
+                rtk = prev.rtk.overrideAttrs (old: { doCheck = false; });
+              })
             ];
           }
 
