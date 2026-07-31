@@ -23,7 +23,9 @@
     devbox
     claude-code
     cmux
+    herdr
     (import ./cmux-git-diff.nix { inherit pkgs; })
+    (import ./hunk.nix { inherit pkgs; })
     gzip
 
     #Programming Languages(あんまり入れたくないよ)
@@ -150,7 +152,7 @@
       source ~/.config/zsh/devbox_auto_shell.zsh
 
       ls() {
-        ${pkgs.eza}/bin/eza -F --icons "$@"
+        ${pkgs.eza}/bin/eza -F --icons=auto "$@"
       }
 
       # Zim のインストール先
