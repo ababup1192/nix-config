@@ -30,6 +30,7 @@
 
     #Programming Languages(あんまり入れたくないよ)
     go
+    python3
 
     rtk
     protobuf
