@@ -36,6 +36,9 @@
   homebrew = {
     enable = true;
     onActivation.cleanup = "none"; # 勝手にアンインストールしない設定
+    # nix-switch 時に brew 本体を更新する。これがないと /opt/homebrew の brew が古いまま止まり、
+    # 新しい cask DSL (command_wrapper など) を解釈できず brew bundle が失敗する。
+    onActivation.autoUpdate = true;
 
     casks = [
       # ブラウザ
