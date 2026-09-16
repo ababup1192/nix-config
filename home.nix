@@ -19,6 +19,7 @@
     git
     jujutsu
     gh
+    _1password-cli
     neovim
     devbox
     claude-code
