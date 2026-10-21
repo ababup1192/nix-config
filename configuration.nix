@@ -17,6 +17,14 @@
   # システム全体で使いたいパッケージ
   environment.systemPackages = [ pkgs.git ];
 
+  # eMudhra 中間CA 8件の秘密鍵が弱く復元可能だった件 (2026-10) への暫定対策。
+  # 侵害された中間CAがチェーンする2ルートを Nix の CA バンドルから除外する。
+  # nixpkgs の cacert が NSS 3.131.1 以上になったら削除してよい。
+  security.pki.caCertificateBlacklist = [
+    "Comodo AAA Services root"
+    "emSign ECC Root CA - G3"
+  ];
+
   # Zshをデフォルトシェルにする（nix-darwinで必須の設定）
   programs.zsh.enable = true;
   # compinit は zimfw の completion モジュールが実行するため、システム側
